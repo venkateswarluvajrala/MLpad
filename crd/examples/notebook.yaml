@@ -1,0 +1,9 @@
+apiVersion: mlpad.venkateswarluvajrala.com/v1
+kind: Notebook
+metadata:
+  name: code-server-3
+  namespace: mlpad
+spec:
+  image: code-server
+  storageSize: 2
+  containerSize: small

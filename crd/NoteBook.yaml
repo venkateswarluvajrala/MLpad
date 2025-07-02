@@ -1,0 +1,92 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: notebooks.mlpad.venkateswarluvajrala.com
+  labels:
+    app: mlpad
+    version: v1
+    component: notebook
+    managed-by: mlpad-operator
+    part-of: mlpad-platform
+    created-by: mlpad-operator
+spec:
+  group: mlpad.venkateswarluvajrala.com
+  names:
+    kind: Notebook
+    plural: notebooks
+    singular: notebook
+    shortNames:
+      - nb
+  scope: Namespaced
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          description: Notebook resource for MLPad platform
+          properties:
+            spec:
+              type: object
+              properties:
+                namespace:
+                  type: string
+                  description: Container namespace to be used
+                  default: default
+                image:
+                  type: string
+                  description: Container image for the notebook
+                  enum:
+                    - code-server
+                    - jupyter-hub
+                    - minimal-python
+                    - CUDA
+                  default: code-server
+                storageSize:
+                  type: integer
+                  description: Size of the storage in GB
+                  minimum: 1
+                  maximum: 100
+                  multipleOf: 1
+                  default: 10
+                env:
+                  type: array
+                  description: Environment variables for the notebook container
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Name of the environment variable
+                      value:
+                        type: string
+                        description: Value of the environment variable
+                  default: [ ]
+                containerSize:
+                  type: string
+                  description: Size of the notebook container
+                  enum:
+                    - small
+                    - medium
+                    - large
+                  default: small
+              required:
+                - image
+                - storageSize
+                - containerSize
+            status:
+              type: object
+              description: Status of the notebook resource
+              properties:
+                state:
+                  type: string
+                  enum:
+                    - Pending
+                    - Running
+                    - Failed
+                    - Succeeded
+                  description: Current state of the notebook
+                message:
+                  type: string
+                  description: Additional information about the notebook status
