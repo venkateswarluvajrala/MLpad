@@ -8,4 +8,5 @@ dependencies = [
     "kopf>=1.38.0",
     "kubernetes>=33.1.0",
     "pytest>=8.4.1",
+    "ruff>=0.12.1",
 ]
