@@ -90,3 +90,13 @@ spec:
                 message:
                   type: string
                   description: Additional information about the notebook status
+      additionalPrinterColumns:
+        - jsonPath: .metadata.namespace
+          name: namespace
+          type: string
+        - jsonPath: .spec.image
+          name: image
+          type: string
+        - jsonPath: .metadata.annotations['storageReadable']
+          name: storage
+          type: string
