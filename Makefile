@@ -2,7 +2,10 @@
 .PHONY: start
 
 start:
-	PYTHONPATH=./src uv run -- kopf run -m mlpad.notebook_handler -n mlpad
+	PYTHONPATH=. uv run -- kopf run -m src.main.mlpad.notebook.handler -n mlpad
 
 lint:
 	uv run ruff format && uv run ruff check
+
+test:
+	uv run pytest -v

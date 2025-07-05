@@ -53,7 +53,12 @@ def create_storage(default_labels, notebook_name, namespace, storage) -> None:
             f"Existing Persistent Volume Claim with name {pvc_name} found, skipping PVC creation."
         )
         return
-    create_pvc(default_labels=default_labels,notebook_name=notebook_name, namespace=namespace, storage=storage)
+    create_pvc(
+        default_labels=default_labels,
+        notebook_name=notebook_name,
+        namespace=namespace,
+        storage=storage,
+    )
 
 
 def add_storage_suffix(default_labels, notebook_name, namespace, storage) -> None:
@@ -73,4 +78,3 @@ def add_storage_suffix(default_labels, notebook_name, namespace, storage) -> Non
         body=object_meta,
         name=notebook_name,
     )
-
