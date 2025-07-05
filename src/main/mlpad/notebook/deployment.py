@@ -38,7 +38,7 @@ def get_notebook_uid(namespace, notebook_name) -> str:
 
 
 def code_server_config(
-        container_name: str, container_size: str, volume_mounts: list[client.V1VolumeMount]
+    container_name: str, container_size: str, volume_mounts: list[client.V1VolumeMount]
 ) -> client.V1Container:
     resources = get_resources(container_size)
     return client.V1Container(
@@ -70,7 +70,7 @@ def get_resources(container_size):
 
 
 def get_notebook_pod_template(
-        notebook_name: str, image: str, container_size: str, labels: dict[str, str]
+    notebook_name: str, image: str, container_size: str, labels: dict[str, str]
 ) -> client.V1PodTemplateSpec:
     volumes = [
         client.V1Volume(
@@ -109,19 +109,21 @@ def get_notebook_pod_template(
 
 
 def create_notebook_deploy(
-        default_labels: dict[str, str],
-        image: str,
-        namespace: str,
-        notebook_name: str,
-        container_size: str,
+    default_labels: dict[str, str],
+    image: str,
+    namespace: str,
+    notebook_name: str,
+    container_size: str,
 ) -> None:
-
     deploy_name = f"{notebook_name}-deploy"
     pod_labels = {"name": notebook_name, **default_labels}
     notebook_uid = get_notebook_uid(namespace, notebook_name)
-    notebook_pod_template = get_notebook_pod_template(image=image, notebook_name=notebook_name,
-                                                      container_size=container_size,
-                                                      labels=pod_labels, )
+    notebook_pod_template = get_notebook_pod_template(
+        image=image,
+        notebook_name=notebook_name,
+        container_size=container_size,
+        labels=pod_labels,
+    )
 
     body = client.V1Deployment(
         api_version="apps/v1",

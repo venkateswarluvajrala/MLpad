@@ -16,8 +16,18 @@ def create_notebook(name: str, spec: kopf.Spec, namespace: str, **kwargs):
     }
     storage = spec["storageSize"]
 
-    add_storage_suffix(default_labels=default_labels, notebook_name=name, namespace=namespace, storage=storage)
-    create_storage(default_labels=default_labels, notebook_name=name, namespace=namespace, storage=storage)
+    add_storage_suffix(
+        default_labels=default_labels,
+        notebook_name=name,
+        namespace=namespace,
+        storage=storage,
+    )
+    create_storage(
+        default_labels=default_labels,
+        notebook_name=name,
+        namespace=namespace,
+        storage=storage,
+    )
     create_notebook_deploy(
         default_labels=default_labels,
         image=spec["image"],
