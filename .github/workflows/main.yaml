@@ -11,6 +11,7 @@ env:
 
 jobs:
   quality_checks:
+    name: Quality Checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
