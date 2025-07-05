@@ -1,26 +1,31 @@
 import kopf
 import logging
-from kubernetes import client
+
+from src.main.mlpad.notebook.deployment import create_notebook_deploy
+from src.main.mlpad.notebook.storage import add_storage_suffix, create_storage
 
 
 @kopf.on.create(
     kind="Notebook", group="mlpad.venkateswarluvajrala.com", retries=3, backoff=30
 )
 def create_notebook(name: str, spec: kopf.Spec, namespace: str, **kwargs):
-    api_instance = client.CustomObjectsApi()
-    storage = spec["storageSize"]
-    object_meta = {
-        "metadata": client.V1ObjectMeta(
-            annotations={"storageReadable": f"{storage}Gi"}, namespace=namespace
-        )
+    default_labels = {
+        "app": "mlpad",
+        "component": "notebook",
+        "managed-by": "mlpad-operator",
     }
-    api_instance.patch_namespaced_custom_object(
-        group="mlpad.venkateswarluvajrala.com",
-        version="v1",
-        namespace="mlpad",
-        plural="notebooks",
-        body=object_meta,
-        name=name,
+    storage = spec["storageSize"]
+
+    add_storage_suffix(default_labels=default_labels, notebook_name=name, namespace=namespace, storage=storage)
+    create_storage(default_labels=default_labels, notebook_name=name, namespace=namespace, storage=storage)
+    create_notebook_deploy(
+        default_labels=default_labels,
+        image=spec["image"],
+        namespace=namespace,
+        notebook_name=name,
+        container_size=spec["containerSize"],
     )
 
-    logging.info(f"Patch is success with name: {name} body: {object_meta}")
+    logging.info(
+        f"Notebook {name} created with storage size {storage}Gi in namespace {namespace}."
+    )

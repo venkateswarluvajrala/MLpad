@@ -29,32 +29,44 @@ def notebook_spec():
 
 class TestNotebook:
     def test_should_create_new_notebook_with_valid_values(self, notebook_spec):
-        name = notebook_spec.get("name")
-        namespace = notebook_spec.get("namespace")
-        storage_size = notebook_spec.get("storage_size")
-        object_meta = {
-            "metadata": kubernetes.client.V1ObjectMeta(
-                annotations={"storageReadable": f"{storage_size}Gi"},
-                namespace=namespace,
-            )
-        }
+        with patch("src.main.mlpad.notebook.handler.create_notebook_deploy") as mock_create_deploy:
+            with patch("src.main.mlpad.notebook.handler.create_storage") as mock_create_storage:
+                with patch("src.main.mlpad.notebook.handler.add_storage_suffix") as mock_add_suffix:
+                    create_notebook(
+                        name=notebook_spec["name"],
+                        spec=notebook_spec["spec"],
+                        namespace=notebook_spec["namespace"],
+                    )
+                    mock_add_suffix.assert_called_once_with(
+                        default_labels={
+                            "app": "mlpad",
+                            "component": "notebook",
+                            "managed-by": "mlpad-operator",
+                        },
+                        notebook_name=notebook_spec["name"],
+                        namespace=notebook_spec["namespace"],
+                        storage=notebook_spec["storage_size"],
+                    )
+                    mock_create_storage.assert_called_once_with(
+                        default_labels={
+                            "app": "mlpad",
+                            "component": "notebook",
+                            "managed-by": "mlpad-operator",
+                        },
+                        notebook_name=notebook_spec["name"],
+                        namespace=notebook_spec["namespace"],
+                        storage=notebook_spec["storage_size"],
+                    )
+                    mock_create_deploy.assert_called_once_with(
+                        default_labels={
+                            "app": "mlpad",
+                            "component": "notebook",
+                            "managed-by": "mlpad-operator",
+                        },
+                        image=notebook_spec["spec"]["image"],
+                        namespace=notebook_spec["namespace"],
+                        notebook_name=notebook_spec["name"],
+                        container_size=notebook_spec["spec"]["containerSize"],
+                    )
 
-        with patch(
-                "src.main.mlpad.notebook.handler.client.CustomObjectsApi"
-        ) as mock_custom_objects_api:
-            mock_kubernetes_client = MagicMock()
-            mock_custom_objects_api.return_value = mock_kubernetes_client
-            mock_kubernetes_client.patch_namespaced_custom_object.return_value = None
 
-            create_notebook(
-                name=name, namespace=namespace, spec=notebook_spec.get("spec")
-            )
-
-            mock_kubernetes_client.patch_namespaced_custom_object.assert_called_once_with(
-                group="mlpad.venkateswarluvajrala.com",
-                version="v1",
-                namespace="mlpad",
-                plural="notebooks",
-                body=object_meta,
-                name=name,
-            )
