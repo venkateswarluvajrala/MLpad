@@ -1,5 +1,5 @@
 
-.PHONY: start
+.PHONY: start lint test
 
 start:
 	PYTHONPATH=. uv run -- kopf run -m src.main.mlpad.notebook.handler -n mlpad

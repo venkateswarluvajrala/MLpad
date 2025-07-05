@@ -1,0 +1,44 @@
+name: "MLpad"
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+env:
+  UV_VERSION: "0.7.19"
+
+jobs:
+  quality_checks:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+
+      - name: Install the project
+        run: |
+          uv sync --locked --all-extras --dev
+
+      - name: Run tests
+        run: |
+          make test
+
+      - name: Run linting
+        run: |
+          make lint
