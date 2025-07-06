@@ -3,6 +3,24 @@ from kubernetes import client
 from src.main.mlpad.notebook.storage import get_pvc_name
 
 
+def get_target_port(image: str) -> int:
+    if image == "code-server":
+        return 8443
+    return -1
+
+
+def get_supported_images():
+    return ["code-server"]
+
+
+def get_notebook_deployment_name(notebook_name: str) -> str:
+    """
+    Returns the deployment name for the given notebook name.
+    The deployment name is constructed by appending '-deploy' to the notebook name.
+    """
+    return f"{notebook_name}-deploy"
+
+
 def is_notebook_exists(namespace: str, name: str) -> bool:
     try:
         client.CustomObjectsApi().get_namespaced_custom_object(
@@ -105,7 +123,9 @@ def get_notebook_pod_template(
                 volumes=volumes,
             ),
         )
-    raise Exception("Unsupported image type. Supported images: code-server")
+    raise Exception(
+        f"Unsupported image type. Supported images: {get_supported_images()}"
+    )
 
 
 def create_notebook_deploy(
@@ -115,7 +135,7 @@ def create_notebook_deploy(
     notebook_name: str,
     container_size: str,
 ) -> None:
-    deploy_name = f"{notebook_name}-deploy"
+    deploy_name = get_notebook_deployment_name(notebook_name=notebook_name)
     pod_labels = {"name": notebook_name, **default_labels}
     notebook_uid = get_notebook_uid(namespace, notebook_name)
     notebook_pod_template = get_notebook_pod_template(

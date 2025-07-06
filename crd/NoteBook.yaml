@@ -100,3 +100,6 @@ spec:
         - jsonPath: .metadata.annotations['storageReadable']
           name: storage
           type: string
+        - jsonPath: .metadata.annotations['endpoint']
+          name: endpoint
+          type: string
