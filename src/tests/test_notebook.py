@@ -38,10 +38,10 @@ class TestNotebook:
                     "src.main.mlpad.notebook.handler.add_storage_suffix"
                 ) as mock_add_suffix:
                     with patch(
-                            "src.main.mlpad.notebook.handler.create_notebook_service"
+                        "src.main.mlpad.notebook.handler.create_notebook_service"
                     ) as mock_create_Service:
                         with patch(
-                                "src.main.mlpad.notebook.handler.update_notebook_endpoint"
+                            "src.main.mlpad.notebook.handler.update_notebook_endpoint"
                         ) as mock_update_notebook_endpoint:
                             create_notebook(
                                 name=notebook_spec["name"],
@@ -80,12 +80,17 @@ class TestNotebook:
                                 container_size=notebook_spec["spec"]["containerSize"],
                             )
 
-                            mock_create_Service.assert_called_once_with(notebook_name=notebook_spec["name"],
-                                                                        namespace=notebook_spec["namespace"],
-                                                                        image=notebook_spec["spec"]["image"],
-                                                                        default_labels={
-                                                                            "app": "mlpad",
-                                                                            "component": "notebook",
-                                                                            "managed-by": "mlpad-operator",
-                                                                        })
-                            mock_update_notebook_endpoint.assert_called_once_with(name=notebook_spec["name"],namespace=notebook_spec["namespace"])
+                            mock_create_Service.assert_called_once_with(
+                                notebook_name=notebook_spec["name"],
+                                namespace=notebook_spec["namespace"],
+                                image=notebook_spec["spec"]["image"],
+                                default_labels={
+                                    "app": "mlpad",
+                                    "component": "notebook",
+                                    "managed-by": "mlpad-operator",
+                                },
+                            )
+                            mock_update_notebook_endpoint.assert_called_once_with(
+                                name=notebook_spec["name"],
+                                namespace=notebook_spec["namespace"],
+                            )

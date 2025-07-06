@@ -6,6 +6,7 @@ from src.main.mlpad.notebook.storage import add_storage_suffix, create_storage
 from src.main.mlpad.notebook.service import create_notebook_service
 from src.main.mlpad.notebook.service import update_notebook_endpoint
 
+
 @kopf.on.create(
     kind="Notebook", group="mlpad.venkateswarluvajrala.com", retries=3, backoff=30
 )

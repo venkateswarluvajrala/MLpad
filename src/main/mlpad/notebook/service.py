@@ -3,7 +3,6 @@ import logging
 from kubernetes import client
 
 from src.main.mlpad.notebook.deployment import (
-    get_notebook_deployment_name,
     get_notebook_uid,
     get_target_port,
     get_supported_images,
@@ -25,13 +24,13 @@ def is_notebook_service_exists(name: str, namespace: str) -> bool:
 
 
 def create_service(
-        name: str,
-        namespace: str,
-        selector_labels: dict[str, str],
-        target_port: int,
-        owner_references: list[client.V1OwnerReference],
-        port: int = 80,
-        protocol: str = "TCP",
+    name: str,
+    namespace: str,
+    selector_labels: dict[str, str],
+    target_port: int,
+    owner_references: list[client.V1OwnerReference],
+    port: int = 80,
+    protocol: str = "TCP",
 ) -> None:
     api_instance = client.CoreV1Api()
     namespace = namespace
@@ -57,7 +56,7 @@ def create_service(
 
 
 def create_notebook_service(
-        notebook_name: str, default_labels: dict[str, str], image: str, namespace: str
+    notebook_name: str, default_labels: dict[str, str], image: str, namespace: str
 ) -> None:
     selector_labels = {
         **default_labels,
@@ -101,13 +100,14 @@ def update_notebook_endpoint(name: str, namespace: str):
     api_instance = client.CoreV1Api()
     service_name = get_service_name(notebook_name=name)
     try:
-        service = api_instance.read_namespaced_service(name=service_name, namespace=namespace)
+        service = api_instance.read_namespaced_service(
+            name=service_name, namespace=namespace
+        )
         endpoint = f"http://{service.spec.cluster_ip}:{service.spec.ports[0].node_port}"
         custom_object_api_instance = client.CustomObjectsApi()
         object_meta = {
             "metadata": client.V1ObjectMeta(
-                annotations={"endpoint": endpoint},
-                namespace=namespace
+                annotations={"endpoint": endpoint}, namespace=namespace
             )
         }
         custom_object_api_instance.patch_namespaced_custom_object(
